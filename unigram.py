@@ -3,6 +3,20 @@ import math
 # dictionary to store occurence of each word
 d = {}
 
+def printUnigramProb(all_sentence, d):
+	total = 0;
+	for sentence in all_sentence:
+		char_in_sentence = (re.split('\s+', sentence))
+		for char in char_in_sentence:
+			# if not <s> increment total
+			if char != '<s>':
+				total += 1
+	print '\n======================================'
+	print '====== Unigram Train Probability ====='
+	print '======================================\n'
+	for word in d:
+		print word + " : ", d[word], " -- ", str(float(d[word])/total)
+
 def UnigramModel(all_sentence):
 	total = 0;
 	# ===================
@@ -20,13 +34,6 @@ def UnigramModel(all_sentence):
 				d[char] = d[char]+1
 			else:
 				d[char] = 1
-		# delete one total because <s> won't count in total length
-	print '\n======================================'
-	print '====== Unigram Train Probability ====='
-	print '======================================\n'
-	print "Total : " + str(total)
-	for word in d:
-		print word + " : ", d[word], " -- ", str(float(d[word])/total)
 	return d
 
 def getUnigramPerplexity(all_sentence, d):
@@ -63,7 +70,4 @@ def getUnigramPerplexity(all_sentence, d):
 		per_word_perplexity = math.pow(2, per_word_entropy)
 
 		print sentence + " : " + str(per_word_perplexity)
-
-
-
 
