@@ -5,11 +5,9 @@ from bigram import *
 
 # dictionary of dictionary: vertical - current char; horizontal - previous char
 trigram_d = {}
-bigram_d = {}
-unigram_d = {}
 
 def TrigramModel(all_sentence):
-	# unigram_d = UnigramModel(all_sentence)
+	bigram_d = {}
 	bigram_d = BigramModel(all_sentence)
 
 	for sentence in all_sentence:
@@ -47,8 +45,8 @@ def TrigramModel(all_sentence):
 
 def getUnsmoothedTrigramPerplexity(all_train_sentence, all_test_sentence, all_test_sentence_ori, trigram_d):
 	trigram_s = {}
+	bigram_d = {}
 	bigram_d = BigramModel(all_train_sentence)
-
 	print '\n========================================='
 	print '===== Unsmoothed Trigram Perplexity ====='
 	print '=========================================\n'
@@ -73,12 +71,12 @@ def getUnsmoothedTrigramPerplexity(all_train_sentence, all_test_sentence, all_te
 					infinite = True
 					break
 				else:
-					prob = 0
+					occur = 0
 					if prev == '<s>' and prevprev == '<s>':
-						prob = len(all_train_sentence)
+						occur = len(all_train_sentence)
 					else:
-						prob = bigram_d[prev][prevprev]
-					tri_prob = float(trigram_d[cur][prev][prevprev])/prob
+						occur = bigram_d[prev][prevprev]
+					tri_prob = float(trigram_d[cur][prev][prevprev])/occur
 					log_prob = math.log(tri_prob, 2)
 					entropy = entropy - log_prob
 		if infinite == True:
@@ -88,8 +86,6 @@ def getUnsmoothedTrigramPerplexity(all_train_sentence, all_test_sentence, all_te
 			per_word_perplexity = math.pow(2, per_word_entropy)
 
 		print sentence + " : " + str(per_word_perplexity)
-
-
 
 
 

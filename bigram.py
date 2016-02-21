@@ -2,7 +2,7 @@ import re
 import math
 from unigram import *
 # dictionary of dictionary: vertical - current char; horizontal - previous char
-bigram_d = {}
+
 unigram_d = {}
 
 def printBigramProb(all_sentence, bigram_d):
@@ -16,6 +16,7 @@ def printBigramProb(all_sentence, bigram_d):
 
 
 def BigramModel(all_sentence):
+	bigram_d = {}
 	# =======================
 	# Contruct 2-d dictionary
 	# =======================
