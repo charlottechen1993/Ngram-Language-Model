@@ -134,37 +134,48 @@ def getSmoothedBigramPerplexity(all_train_sentence, all_dev_sentence, all_test_s
 			avg_perplexity += per_word_perplexity
 		if weight == -1:
 			weight = avg_perplexity
+			choosen_lambda = lamb
 		else:
 			if weight > avg_perplexity:
 				weight = avg_perplexity
 				choosen_lamb = lamb
 	print "Lambda: ", choosen_lamb
 
+	
 	# use the found lambda to find the perplexity for the test file
+	bigram_perplexity_list = {}
 	for sentence in all_test_sentence:
 		entropy = 0.0
 		char_in_sentence = (re.split('\s', sentence))
-		
 		for i in range(len(char_in_sentence)-1):
 			prev = char_in_sentence[i]
 			cur = char_in_sentence[i+1]
+
+			if cur not in bigram_perplexity_list:
+				bigram_perplexity_list[cur] = {}
 			pair_prob = 0
 			if cur not in bigram_d:
 				pair_prob = (1-choosen_lamb)*(float(unigram_d[cur])/total)
+				if prev not in bigram_perplexity_list[cur]:
+					bigram_perplexity_list[cur][prev] = pair_prob
 			else:
 				if prev not in bigram_d[cur]:
 					pair_prob = (1-choosen_lamb)*(float(unigram_d[cur])/total)
+					if prev not in bigram_perplexity_list[cur]:
+						bigram_perplexity_list[cur][prev] = pair_prob
 				else:
 					pair_prob = choosen_lamb*(float(bigram_d[cur][prev])/bigram_s[prev]) + (1-choosen_lamb)*(float(unigram_d[cur])/total)
-			# print cur, " | ", prev, " = ", pair_prob
+					if prev not in bigram_perplexity_list[cur]:
+						bigram_perplexity_list[cur][prev] = pair_prob
 			log_prob = math.log(pair_prob, 2)
 			entropy = entropy - log_prob
-
 		per_word_entropy = entropy/(len(char_in_sentence)-1)
 		per_word_perplexity = math.pow(2, per_word_entropy)
 
 		print ori_list[count] + " : " + str(per_word_perplexity)
 		count += 1
-
+	bigram_perplexity_list['<s>'] = {}
+	bigram_perplexity_list['<s>']['<s>'] = 1
+	return bigram_perplexity_list
 
 

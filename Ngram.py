@@ -34,6 +34,7 @@ s = preprocessText(train_text, all_train_sentence, all_test_sentence, all_dev_se
 all_test_sentence_cpy = replaceTestUnknown(all_train_sentence, all_test_sentence, s)
 
 d = {}
+bigram_perplexity_list = {}
 # cases for each model
 if model=='1':
 	d = UnigramModel(all_train_sentence)
@@ -50,15 +51,17 @@ elif model=='2s':
 	d = BigramModel(all_train_sentence)
 	# preprocess dev file to replace word with <unk> according to unigram
 	all_dev_sentence_cpy = replaceTestUnknown(all_train_sentence, all_dev_sentence, s)
-	getSmoothedBigramPerplexity(all_train_sentence, all_dev_sentence_cpy, all_test_sentence_cpy, all_test_sentence, d)
+	bigram_perplexity_list = getSmoothedBigramPerplexity(all_train_sentence, all_dev_sentence_cpy, all_test_sentence_cpy, all_test_sentence, d)
 	print "\n"
 elif model=='3':
 	d = TrigramModel(all_train_sentence)
 	getUnsmoothedTrigramPerplexity(all_train_sentence, all_test_sentence_cpy, all_test_sentence, d)
 	print "\n"
 elif model=='3s':
-	TriBiUni()
-
-
+	trigram_d = TrigramModel(all_train_sentence)
+	bigram_d = BigramModel(all_train_sentence)
+	all_dev_sentence_cpy = replaceTestUnknown(all_train_sentence, all_dev_sentence, s)
+	bigram_perplexity_list = getSmoothedBigramPerplexity(all_train_sentence, all_dev_sentence_cpy, all_test_sentence_cpy, all_test_sentence, bigram_d)
+	getSmoothedTrigramPerplexity(all_train_sentence, all_dev_sentence_cpy, all_test_sentence_cpy, all_test_sentence, bigram_perplexity_list, trigram_d)
 
 

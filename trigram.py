@@ -87,12 +87,93 @@ def getUnsmoothedTrigramPerplexity(all_train_sentence, all_test_sentence, all_te
 
 		print sentence + " : " + str(per_word_perplexity)
 
+def getSmoothedTrigramPerplexity(all_train_sentence, all_dev_sentence_cpy, all_test_sentence_cpy, all_test_sentence_ori, bigram_perplexity_list, d):
+	lamb_list = [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9]
+
+	bigram_d = {}
+	bigram_d = BigramModel(all_train_sentence)
+
+	ori_list = []
+	for i in range(len(all_test_sentence_ori)):
+		ori_list.insert(i, all_test_sentence_ori[i])
+	count = 0
+	print '\n========================================='
+	print '====== Smoothed Trigram Perplexity ======'
+	print '=========================================\n'
+	# print bigram_perplexity_list
+	choosen_lambda = 0
+	weight = -1
+	for lamb in lamb_list:
+		avg_perplexity = 0;
+		for sentence in all_test_sentence_cpy:
+			sentence_cpy = '<s> ' + sentence
+			# entropy = 0-log(Pr(word_1))...-log(Pr(word_n))
+			entropy = 0.0
+			char_in_sentence = (re.split('\s+', sentence_cpy))
+			for i in range(len(char_in_sentence)-2):
+				prevprev = char_in_sentence[i]
+				prev = char_in_sentence[i+1]
+				cur = char_in_sentence[i+2]
+				tri_prob = 0
+				if cur not in trigram_d:
+					tri_prob = (1-choosen_lambda)*bigram_perplexity_list[prev][prevprev]
+				elif prev not in trigram_d[cur]:
+					tri_prob = (1-choosen_lambda)*bigram_perplexity_list[prev][prevprev]
+				else:
+					if prevprev not in trigram_d[cur][prev]:
+						tri_prob = (1-choosen_lambda)*bigram_perplexity_list[prev][prevprev]
+					else:
+						occur = 0
+						if prev == '<s>' and prevprev == '<s>':
+							occur = len(all_train_sentence)
+						else:
+							occur = bigram_d[prev][prevprev]
+						tri_prob = choosen_lambda*(float(trigram_d[cur][prev][prevprev])/occur) + (1-choosen_lambda)*bigram_perplexity_list[prev][prevprev]
+				log_prob = math.log(tri_prob, 2)
+				entropy = entropy - log_prob
+			per_word_entropy = entropy/(len(char_in_sentence)-2)
+			per_word_perplexity = math.pow(2, per_word_entropy)
+			avg_perplexity += per_word_perplexity
+		
+		if weight == -1:
+			weight = avg_perplexity
+			choosen_lambda = lamb
+		else:
+			if weight > avg_perplexity:
+				weight = avg_perplexity
+				choosen_lambda = lamb
+	print "Lambda: ", choosen_lambda
 
 
+	for sentence in all_test_sentence_cpy:
+		sentence_cpy = '<s> ' + sentence
+		# entropy = 0-log(Pr(word_1))...-log(Pr(word_n))
+		entropy = 0.0
+		char_in_sentence = (re.split('\s+', sentence_cpy))
+		for i in range(len(char_in_sentence)-2):
+			prevprev = char_in_sentence[i]
+			prev = char_in_sentence[i+1]
+			cur = char_in_sentence[i+2]
+			tri_prob = 0
+			if cur not in trigram_d:
+				tri_prob = (1-choosen_lambda)*bigram_perplexity_list[prev][prevprev]
+			elif prev not in trigram_d[cur]:
+				tri_prob = (1-choosen_lambda)*bigram_perplexity_list[prev][prevprev]
+			else:
+				if prevprev not in trigram_d[cur][prev]:
+					tri_prob = (1-choosen_lambda)*bigram_perplexity_list[prev][prevprev]
+				else:
+					occur = 0
+					if prev == '<s>' and prevprev == '<s>':
+						occur = len(all_train_sentence)
+					else:
+						occur = bigram_d[prev][prevprev]
+					tri_prob = choosen_lambda*(float(trigram_d[cur][prev][prevprev])/occur) + (1-choosen_lambda)*bigram_perplexity_list[prev][prevprev]
+			log_prob = math.log(tri_prob, 2)
+			entropy = entropy - log_prob
+		per_word_entropy = entropy/(len(char_in_sentence)-2)
+		per_word_perplexity = math.pow(2, per_word_entropy)
 
-
-
-
-
-
+		print ori_list[count] + " : " + str(per_word_perplexity)
+		count+=1
 
