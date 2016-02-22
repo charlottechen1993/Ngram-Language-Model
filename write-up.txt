@@ -1,0 +1,20 @@
+Charlotte Chen
+Assignment 2: Write-up
+
+------------------------------------------------------------------------------
+1) What problems can occur (or have occurred in your experiments, if there is any) when the N-gram language model you implemented in Part I is trained on a large training data such as the Project Gutenberg? Given that you have access to the development data, how did it help you to adapt and/or train your models? 
+------------------------------------------------------------------------------
+Since the toy model is a lot smaller than the data in Project Gutenberg, my parser method is missing a lot of cases (such as ‘:’, “#”, “;”, etc), which caused my program perform poorly in putting together the Ngram model using all the train files. Also, because the size of the training file is large, my program always takes a very long time to run even on the unigram, which presents extreme difficulties when I debug. 
+
+I assume the dev file will help me find the most optimal lambda value that will help better perform my bigram and trigram smoothing model
+
+------------------------------------------------------------------------------
+2) How did your models perform? Were they as you expected? Why wasn’t the N-gram language model alone good enough for the sentence completion task? What additional tools or techniques do you think are necessary? Can the language model itself be changed to account for more ambiguities? 
+------------------------------------------------------------------------------
+Unfortunately my model didn’t perform with the correct output with the Project Gutenberg data, which is not what I expected. The N-gram alone wouldn’t be good enough for the sentence completion task because the time and space complexity are huge, and even if the result might improve as N-gram increase, the time and space will improve drastically as well. We can also discount the 0-count words using Basic or complicated Good-Turing, which will improve our unsmoothed trigram and bigram model by ridding the infinite per-word-perplexity
+
+
+------------------------------------------------------------------------------
+3) If you did the bonus part -- what different strategies did you try? Discuss why these strategies worked or didn’t work.
+------------------------------------------------------------------------------
+N/A

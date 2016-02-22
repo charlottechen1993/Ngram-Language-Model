@@ -59,5 +59,4 @@ def preprocessText(train_text, all_train_sentence, all_test_sentence, all_dev_se
 	s = replaceUnknown(train_text, all_train_sentence, 1)
 	return s
 
-
-
+	

@@ -82,7 +82,7 @@ def getUnsmoothedBigramPerplexity(all_train_sentence, all_test_sentence, all_tes
 		count += 1
 
 
-def getSmoothedBigramPerplexity(all_train_sentence, all_dev_sentence, all_test_sentence, all_test_sentence_ori, bigram_d):
+def getSmoothedBigramPerplexity(all_train_sentence, all_dev_sentence, all_test_sentence, all_test_sentence_ori, toPrint, bigram_d):
 	lamb_list = [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9]
 	bigram_s = {}
 	for char in bigram_d:
@@ -90,14 +90,15 @@ def getSmoothedBigramPerplexity(all_train_sentence, all_dev_sentence, all_test_s
 		for child in bigram_d[char]:
 			bigram_s[char] += bigram_d[char][child]
 		bigram_s['<s>'] = len(all_train_sentence)
+	if toPrint == True:
+		ori_list = []
+		for i in range(len(all_test_sentence_ori)):
+			ori_list.insert(i, all_test_sentence_ori[i])
+		count = 0
+		print '\n======================================='
+		print '====== Smoothed Bigram Perplexity ====='
+		print '=======================================\n'
 
-	ori_list = []
-	for i in range(len(all_test_sentence_ori)):
-		ori_list.insert(i, all_test_sentence_ori[i])
-	count = 0
-	print '\n======================================='
-	print '====== Smoothed Bigram Perplexity ====='
-	print '=======================================\n'
 
 	# Use dev file to find best lamba value
 	unigram_d = UnigramModel(all_train_sentence)
@@ -139,7 +140,8 @@ def getSmoothedBigramPerplexity(all_train_sentence, all_dev_sentence, all_test_s
 			if weight > avg_perplexity:
 				weight = avg_perplexity
 				choosen_lamb = lamb
-	print "Lambda: ", choosen_lamb
+	if toPrint == True:
+		print "Lambda: ", choosen_lamb
 
 	
 	# use the found lambda to find the perplexity for the test file
@@ -172,8 +174,9 @@ def getSmoothedBigramPerplexity(all_train_sentence, all_dev_sentence, all_test_s
 		per_word_entropy = entropy/(len(char_in_sentence)-1)
 		per_word_perplexity = math.pow(2, per_word_entropy)
 
-		print ori_list[count] + " : " + str(per_word_perplexity)
-		count += 1
+		if toPrint == True:
+			print ori_list[count] + " : " + str(per_word_perplexity)
+			count += 1
 	bigram_perplexity_list['<s>'] = {}
 	bigram_perplexity_list['<s>']['<s>'] = 1
 	return bigram_perplexity_list

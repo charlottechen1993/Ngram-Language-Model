@@ -47,6 +47,10 @@ def getUnsmoothedTrigramPerplexity(all_train_sentence, all_test_sentence, all_te
 	trigram_s = {}
 	bigram_d = {}
 	bigram_d = BigramModel(all_train_sentence)
+	ori_list = []
+	for i in range(len(all_test_sentence_ori)):
+		ori_list.insert(i, all_test_sentence_ori[i])
+	count = 0
 	print '\n========================================='
 	print '===== Unsmoothed Trigram Perplexity ====='
 	print '=========================================\n'
@@ -85,7 +89,8 @@ def getUnsmoothedTrigramPerplexity(all_train_sentence, all_test_sentence, all_te
 			per_word_entropy = entropy/(len(char_in_sentence)-2)
 			per_word_perplexity = math.pow(2, per_word_entropy)
 
-		print sentence + " : " + str(per_word_perplexity)
+		print ori_list[count] + " : " + str(per_word_perplexity)
+		count += 1
 
 def getSmoothedTrigramPerplexity(all_train_sentence, all_dev_sentence_cpy, all_test_sentence_cpy, all_test_sentence_ori, bigram_perplexity_list, d):
 	lamb_list = [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9]

@@ -24,7 +24,7 @@ def UnigramModel(all_sentence):
 	# ===================
 	# iterate through each sentence
 	for sentence in all_sentence:
-		char_in_sentence = (re.split('\s+', sentence))
+		char_in_sentence = (re.split('\s', sentence))
 		# update each word in each sentence in dictionary
 		for char in char_in_sentence:
 			# if not <s> increment total

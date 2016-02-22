@@ -1,5 +1,6 @@
 import sys
 import re
+import os
 import string
 from unigram import *
 from bigram import *
@@ -11,15 +12,36 @@ trainfile = sys.argv[2]
 devfile = sys.argv[3]
 testfile = sys.argv[4]
 
-with open(trainfile, 'r') as train:
-	train_text = train.read()
+path = trainfile
+
+if '.txt' not in trainfile:
+	train_text =[]
+	ori_directory = os.getcwd()
+	files = os.listdir('Holmes_Training_Data')
+	os.chdir(path)
+	full_train = ""
+	for trainfile in files:
+		with open(trainfile, 'r') as train:
+			for line in train:
+				print line
+				full_train = "%s%s"%(full_train,line)
+	filelist = os.listdir(os.getcwd())
+	os.chdir(ori_directory)
+else:
+	with open(trainfile, 'r') as train:
+		train_text = train.read()
 with open(devfile, 'r') as dev:
 	dev_text = dev.read()
 with open(testfile, 'r') as test:
 	test_text = test.read()
- 
-# format train input sentence
-all_train_sentence = (re.split('\n+', train_text))
+
+
+if '.txt' in trainfile:
+	# format train input sentence
+	all_train_sentence = (re.split('\n+', train_text))
+else:
+	all_train_sentence = (re.split('\n+', full_train))
+
 # format test input sentence
 all_test_sentence = (re.split('\n+', test_text))
 # format dev input sentence
@@ -51,7 +73,7 @@ elif model=='2s':
 	d = BigramModel(all_train_sentence)
 	# preprocess dev file to replace word with <unk> according to unigram
 	all_dev_sentence_cpy = replaceTestUnknown(all_train_sentence, all_dev_sentence, s)
-	bigram_perplexity_list = getSmoothedBigramPerplexity(all_train_sentence, all_dev_sentence_cpy, all_test_sentence_cpy, all_test_sentence, d)
+	bigram_perplexity_list = getSmoothedBigramPerplexity(all_train_sentence, all_dev_sentence_cpy, all_test_sentence_cpy, all_test_sentence, True, d)
 	print "\n"
 elif model=='3':
 	d = TrigramModel(all_train_sentence)
@@ -61,7 +83,5 @@ elif model=='3s':
 	trigram_d = TrigramModel(all_train_sentence)
 	bigram_d = BigramModel(all_train_sentence)
 	all_dev_sentence_cpy = replaceTestUnknown(all_train_sentence, all_dev_sentence, s)
-	bigram_perplexity_list = getSmoothedBigramPerplexity(all_train_sentence, all_dev_sentence_cpy, all_test_sentence_cpy, all_test_sentence, bigram_d)
+	bigram_perplexity_list = getSmoothedBigramPerplexity(all_train_sentence, all_dev_sentence_cpy, all_test_sentence_cpy, all_test_sentence, False, bigram_d)
 	getSmoothedTrigramPerplexity(all_train_sentence, all_dev_sentence_cpy, all_test_sentence_cpy, all_test_sentence, bigram_perplexity_list, trigram_d)
-
-
